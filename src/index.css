@@ -1,3 +1,4 @@
+/* src/index.css */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +6,27 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f2f5; /* Light background for the whole page */
+  min-height: 100vh; /* Ensure body takes full viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.App {
+  /* The ChatBox component itself will manage its max-width and centering */
+  width: 100%;
+  min-height: 100vh; /* Ensure App fills viewport height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
