@@ -1,42 +1,43 @@
-// src/ChatBox.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Import axios for making HTTP requests
+import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 
 // Define your backend URL
-const BACKEND_URL = 'http://localhost:5000'; // IMPORTANT: Make sure this matches your Node.js server port
+const BACKEND_URL = 'http://localhost:5000';
+
+// Define the name of the poetry book for display
+// You could make this dynamic if your backend provided it
+const POETRY_BOOK_NAME = "The Poetry Collection"; // Or "The Poet's Anthology", "My Beloved Poems" etc.
 
 function ChatBox() {
-    const [poemTitles, setPoemTitles] = useState([]); // State to store fetched poem titles
-    const [selectedPoem, setSelectedPoem] = useState(''); // State for the currently selected poem title
-    const [userMessage, setUserMessage] = useState(''); // State for the user's input message
-    const [chatHistory, setChatHistory] = useState([]); // State to store chat messages
-    const [loading, setLoading] = useState(false); // State for loading indicator
-    const [error, setError] = useState(null); // State for error messages
+    const [poemTitles, setPoemTitles] = useState([]);
+    const [selectedPoem, setSelectedPoem] = useState('');
+    const [userMessage, setUserMessage] = useState('');
+    const [chatHistory, setChatHistory] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // useEffect to fetch poem titles when the component mounts
     useEffect(() => {
         const fetchPoemTitles = async () => {
             try {
-                setError(null); // Clear previous errors
-                setLoading(true); // Set loading state
-                // Your backend's route for poem titles is /api/poems
+                setError(null);
+                setLoading(true);
                 const response = await axios.get(`${BACKEND_URL}/api/poems`);
-                setPoemTitles(response.data); // Assuming backend sends an array directly
+                setPoemTitles(response.data);
                 if (response.data.length > 0) {
-                    setSelectedPoem(response.data[0]); // Automatically select the first poem
+                    setSelectedPoem(response.data[0]);
                 }
             } catch (err) {
                 console.error("Error fetching poem titles:", err);
-                setError("Failed to load poem titles. Please check if backend is running and accessible.");
+                setError("Failed to load poem titles. Please check backend.");
             } finally {
-                setLoading(false); // Reset loading state
+                setLoading(false);
             }
         };
 
         fetchPoemTitles();
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
 
-    // Function to send message to backend and get AI reply
     const sendMessage = async () => {
         if (!userMessage.trim() || !selectedPoem) {
             alert("Please select a poem and type a message.");
@@ -44,37 +45,32 @@ function ChatBox() {
         }
 
         const newUserMessage = userMessage;
-        setUserMessage(''); // Clear input field immediately
+        setUserMessage('');
 
-        // Add user's message to chat history
         setChatHistory(prevHistory => [...prevHistory, { type: 'user', text: newUserMessage }]);
 
         try {
-            setError(null); // Clear previous errors
-            setLoading(true); // Set loading state
+            setError(null);
+            setLoading(true);
 
-            // Your backend's chat route is /api/chat
             const response = await axios.post(`${BACKEND_URL}/api/chat`, {
-                message: newUserMessage, // Backend expects 'message'
-                poemTitle: selectedPoem, // Backend expects 'poemTitle'
+                message: newUserMessage,
+                poemTitle: selectedPoem,
             });
 
-            const aiReply = response.data.reply; // Backend sends response in 'reply' field
+            const aiReply = response.data.reply;
 
-            // Add AI's reply to chat history
             setChatHistory(prevHistory => [...prevHistory, { type: 'ai', text: aiReply }]);
 
         } catch (err) {
             console.error("Error sending message to AI:", err.response?.data || err.message);
             setError("Failed to get AI response. Please try again. Check backend console for details.");
-            // Optionally add the user message back if AI failed
             setChatHistory(prevHistory => prevHistory.slice(0, prevHistory.length - 1));
         } finally {
-            setLoading(false); // Reset loading state
+            setLoading(false);
         }
     };
 
-    // Handle Enter key press in the input field
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !loading) {
             sendMessage();
@@ -93,9 +89,12 @@ function ChatBox() {
             backgroundColor: '#fff',
             display: 'flex',
             flexDirection: 'column',
-            minHeight: 'calc(100vh - 40px)' // Adjust based on body/root padding
+            minHeight: 'calc(100vh - 40px)'
         }}>
-            <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '20px' }}>Chat with the Poet AI</h2>
+            {/* UPDATED HEADING */}
+            <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '20px' }}>
+                Chat about {POETRY_BOOK_NAME}
+            </h2>
 
             {loading && <p style={{ textAlign: 'center', color: '#007bff' }}>Loading...</p>}
             {error && <p style={{ textAlign: 'center', color: '#f44336' }}>Error: {error}</p>}
@@ -149,26 +148,32 @@ function ChatBox() {
                         <div
                             key={index}
                             style={{
+                                marginBottom: '10px',
                                 padding: '8px 12px',
                                 borderRadius: '15px',
                                 maxWidth: '80%',
-                                // Use flexbox alignment for messages
                                 alignSelf: msg.type === 'user' ? 'flex-end' : 'flex-start',
                                 backgroundColor: msg.type === 'user' ? '#e0f7fa' : '#f0f0f0',
                                 border: msg.type === 'user' ? '1px solid #b2ebf2' : '1px solid #e0e0e0',
-                                wordWrap: 'break-word'
+                                wordWrap: 'break-word',
+                                whiteSpace: 'pre-wrap'
                             }}
                         >
                             <strong style={{ color: msg.type === 'user' ? '#00796b' : '#333' }}>
                                 {msg.type === 'user' ? 'You:' : 'Poet AI:'}
-                            </strong> {msg.text}
+                            </strong>
+                            {msg.type === 'ai' ? (
+                                <ReactMarkdown>{msg.text}</ReactMarkdown>
+                            ) : (
+                                msg.text
+                            )}
                         </div>
                     ))
                 )}
             </div>
 
             {/* Message Input */}
-            <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}> {/* Push to bottom */}
+            <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
                 <input
                     type="text"
                     value={userMessage}
