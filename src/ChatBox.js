@@ -3,7 +3,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 
 // Define your backend URL
-const BACKEND_URL = 'http://localhost:5000';
+const BACKEND_URL = 'https://poetrychat-s.onrender.com';
 
 // Define the name of the poetry book for display
 // You could make this dynamic if your backend provided it
