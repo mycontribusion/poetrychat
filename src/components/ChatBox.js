@@ -15,7 +15,7 @@ function ChatBox({ poemTitle }) {
     setInput("");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/chat", {
+      const response = await axios.post("https://poetrychat-s.onrender.com", {
         prompt: input,
         poemTitle: poemTitle || "",
       });

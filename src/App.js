@@ -1,4 +1,4 @@
-// src/App.js
+
 import React from 'react';
 import ChatBox from './ChatBox'; // Import the ChatBox component
 
