@@ -5,9 +5,11 @@ import ReactMarkdown from 'react-markdown';
 // Define your backend URL
 const BACKEND_URL = 'https://poetrychat-s.onrender.com';
 
+//https://poetrychat-s.onrender.com http://localhost:5000
+
 // Define the name of the poetry book for display
 // You could make this dynamic if your backend provided it
-const POETRY_BOOK_NAME = "The Poetry Collection"; // Or "The Poet's Anthology", "My Beloved Poems" etc.
+const POETRY_BOOK_NAME = " Poetry Collection"; // Or "The Poet's Anthology", "My Beloved Poems" etc.
 
 function ChatBox() {
     const [poemTitles, setPoemTitles] = useState([]);
