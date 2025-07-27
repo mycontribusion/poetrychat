@@ -162,5 +162,6 @@
   .message-input, .send-button {
       font-size: 0.9em; /* Slightly smaller font on mobile */
       padding: 8px 15px;
+      margin-bottom: 50px;
   }
 }
