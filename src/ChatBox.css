@@ -5,11 +5,11 @@
   font-family: 'Arial', sans-serif;
   max-width: 800px; /* Max width for desktop */
   width: 95%; /* Responsive width */
-  height: 88vh; /* Slightly reduced height to provide more vertical margin */
-  margin: 6vh auto; /* Increased vertical margin to lift the box from edges */
+  height: 85vh; /* Reduced height to provide more vertical margin buffer */
+  margin: 7.5vh auto; /* Increased vertical margin to lift the box from edges */
   padding: 20px; /* Uniform padding */
-  /* Increased bottom padding to lift input slightly, and account for safe area insets */
-  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); /* More aggressive bottom padding */
+  /* Increased bottom padding to lift input significantly, and account for safe area insets */
+  padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px)); /* More aggressive bottom padding */
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -145,7 +145,7 @@
   .chatbox-container {
       padding: 15px;
       /* Adjust padding-bottom for mobile, also considering safe area insets */
-      padding-bottom: calc(35px + env(safe-area-inset-bottom, 0px)); /* Increased for mobile */
+      padding-bottom: calc(45px + env(safe-area-inset-bottom, 0px)); /* Even more aggressive for mobile */
       width: 98%; /* Slightly wider on very small screens */
       height: 98vh; /* Take up more height on small screens */
       margin: 1vh auto; /* Smaller margins */
