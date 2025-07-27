@@ -1,0 +1,166 @@
+/* src/ChatBox.css */
+
+/* Main ChatBox Container */
+.chatbox-container {
+  font-family: 'Arial', sans-serif;
+  max-width: 800px; /* Max width for desktop */
+  width: 95%; /* Responsive width */
+  height: 88vh; /* Slightly reduced height to provide more vertical margin */
+  margin: 6vh auto; /* Increased vertical margin to lift the box from edges */
+  padding: 20px; /* Uniform padding */
+  /* Increased bottom padding to lift input slightly, and account for safe area insets */
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); /* More aggressive bottom padding */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+/* Heading */
+.chatbox-heading {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Loading and Error Messages */
+.chatbox-message-center {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.chatbox-loading {
+  color: #007bff;
+}
+
+.chatbox-error {
+  color: #f44336;
+}
+
+/* Poem Selection */
+.poem-selection-group {
+  margin-bottom: 20px;
+}
+
+.poem-selection-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.poem-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+}
+
+/* Chat History Display */
+.chat-history-display {
+  border: 1px solid #eee;
+  border-radius: 5px;
+  padding: 15px;
+  flex-grow: 1; /* This makes it take up available space */
+  overflow-y: auto; /* Enable scrolling for chat history */
+  margin-bottom: 20px; /* Space between history and input */
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-history-empty-message {
+  color: #888;
+  text-align: center;
+  margin: auto; /* Centers the text vertically within the flex container */
+}
+
+/* Individual Chat Message */
+.chat-message {
+  padding: 8px 12px;
+  border-radius: 15px;
+  max-width: 80%;
+  word-wrap: break-word;
+  white-space: pre-wrap; /* Preserve whitespace and line breaks for markdown */
+}
+
+.chat-message.user {
+  align-self: flex-end; /* Align user messages to the right */
+  background-color: #e0f7fa;
+  border: 1px solid #b2ebf2;
+  margin-left: auto; /* Push user message to the right */
+}
+
+.chat-message.ai {
+  align-self: flex-start; /* Align AI messages to the left */
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  margin-right: auto; /* Push AI message to the left */
+}
+
+.chat-message-sender {
+  color: #333; /* Default for AI */
+}
+
+.chat-message-sender.user {
+  color: #00796b; /* Specific color for user sender */
+}
+
+/* Message Input Area */
+.message-input-area {
+  display: flex;
+  gap: 10px;
+}
+
+.message-input {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+}
+
+.send-button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Basic responsiveness for smaller screens */
+@media (max-width: 600px) {
+  .chatbox-container {
+      padding: 15px;
+      /* Adjust padding-bottom for mobile, also considering safe area insets */
+      padding-bottom: calc(35px + env(safe-area-inset-bottom, 0px)); /* Increased for mobile */
+      width: 98%; /* Slightly wider on very small screens */
+      height: 98vh; /* Take up more height on small screens */
+      margin: 1vh auto; /* Smaller margins */
+  }
+
+  .chat-history-display {
+      padding: 10px;
+  }
+
+  .chat-message {
+      max-width: 90%; /* Allow messages to take more width */
+  }
+
+  .message-input, .send-button {
+      font-size: 0.9em; /* Slightly smaller font on mobile */
+      padding: 8px 15px;
+  }
+}

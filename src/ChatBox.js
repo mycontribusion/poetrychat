@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import './ChatBox.css'; // Import the new CSS file
 
 // Define your backend URL
-const BACKEND_URL = 'https://poetrychat-s.onrender.com';
+const BACKEND_URL = 'https://poetrychat-s.onrender.com'; // Ensure this is your deployed Render URL https://poetrychat-s.onrender.com http://localhost:5000
 
-//https://poetrychat-s.onrender.com http://localhost:5000
-
-// Define the name of the poetry book for display
-// You could make this dynamic if your backend provided it
-const POETRY_BOOK_NAME = " Poetry Collection"; // Or "The Poet's Anthology", "My Beloved Poems" etc.
+const POETRY_BOOK_NAME = "From Behind A Young Man's Chest";
 
 function ChatBox() {
     const [poemTitles, setPoemTitles] = useState([]);
@@ -18,6 +15,19 @@ function ChatBox() {
     const [chatHistory, setChatHistory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const chatHistoryRef = useRef(null);
+
+    // Modified useEffect for improved scrolling behavior
+    useEffect(() => {
+        if (chatHistoryRef.current) {
+            // Scroll into view the last message, ensuring its start is visible
+            const lastMessageElement = chatHistoryRef.current.lastElementChild;
+            if (lastMessageElement) {
+                lastMessageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+        }
+    }, [chatHistory]); // Dependency on chatHistory
 
     useEffect(() => {
         const fetchPoemTitles = async () => {
@@ -46,23 +56,23 @@ function ChatBox() {
             return;
         }
 
-        const newUserMessage = userMessage;
-        setUserMessage('');
+        const messageToSend = userMessage;
 
-        setChatHistory(prevHistory => [...prevHistory, { type: 'user', text: newUserMessage }]);
+        setChatHistory(prevHistory => [...prevHistory, { type: 'user', text: messageToSend }]);
 
         try {
             setError(null);
             setLoading(true);
 
             const response = await axios.post(`${BACKEND_URL}/api/chat`, {
-                message: newUserMessage,
+                message: messageToSend,
                 poemTitle: selectedPoem,
             });
 
             const aiReply = response.data.reply;
 
             setChatHistory(prevHistory => [...prevHistory, { type: 'ai', text: aiReply }]);
+            setUserMessage('');
 
         } catch (err) {
             console.error("Error sending message to AI:", err.response?.data || err.message);
@@ -80,30 +90,17 @@ function ChatBox() {
     };
 
     return (
-        <div style={{
-            fontFamily: 'Arial, sans-serif',
-            maxWidth: '800px',
-            margin: '20px auto',
-            padding: '20px',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-            backgroundColor: '#fff',
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: 'calc(100vh - 40px)'
-        }}>
-            {/* UPDATED HEADING */}
-            <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '20px' }}>
+        <div className="chatbox-container">
+            <h2 className="chatbox-heading">
                 Chat about {POETRY_BOOK_NAME}
             </h2>
 
-            {loading && <p style={{ textAlign: 'center', color: '#007bff' }}>Loading...</p>}
-            {error && <p style={{ textAlign: 'center', color: '#f44336' }}>Error: {error}</p>}
+            {loading && <p className="chatbox-message-center chatbox-loading">Loading...</p>}
+            {error && <p className="chatbox-message-center chatbox-error">Error: {error}</p>}
 
             {/* Poem Selection */}
-            <div style={{ marginBottom: '20px' }}>
-                <label htmlFor="poem-select" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+            <div className="poem-selection-group">
+                <label htmlFor="poem-select" className="poem-selection-label">
                     Select a Poem:
                 </label>
                 <select
@@ -111,13 +108,7 @@ function ChatBox() {
                     value={selectedPoem}
                     onChange={(e) => setSelectedPoem(e.target.value)}
                     disabled={loading || poemTitles.length === 0}
-                    style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: '5px',
-                        border: '1px solid #ccc',
-                        fontSize: '1em'
-                    }}
+                    className="poem-select"
                 >
                     {poemTitles.length === 0 ? (
                         <option value="">No poems available</option>
@@ -130,38 +121,19 @@ function ChatBox() {
             </div>
 
             {/* Chat History Display */}
-            <div style={{
-                border: '1px solid #eee',
-                borderRadius: '5px',
-                padding: '15px',
-                minHeight: '250px',
-                maxHeight: '400px',
-                overflowY: 'auto',
-                marginBottom: '20px',
-                backgroundColor: '#f9f9f9',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px'
-            }}>
+            <div
+                ref={chatHistoryRef}
+                className="chat-history-display"
+            >
                 {chatHistory.length === 0 ? (
-                    <p style={{ color: '#888', textAlign: 'center', margin: 'auto' }}>Start a conversation about the selected poem!</p>
+                    <p className="chat-history-empty-message">Start a conversation about the selected poem!</p>
                 ) : (
                     chatHistory.map((msg, index) => (
                         <div
                             key={index}
-                            style={{
-                                marginBottom: '10px',
-                                padding: '8px 12px',
-                                borderRadius: '15px',
-                                maxWidth: '80%',
-                                alignSelf: msg.type === 'user' ? 'flex-end' : 'flex-start',
-                                backgroundColor: msg.type === 'user' ? '#e0f7fa' : '#f0f0f0',
-                                border: msg.type === 'user' ? '1px solid #b2ebf2' : '1px solid #e0e0e0',
-                                wordWrap: 'break-word',
-                                whiteSpace: 'pre-wrap'
-                            }}
+                            className={`chat-message ${msg.type}`}
                         >
-                            <strong style={{ color: msg.type === 'user' ? '#00796b' : '#333' }}>
+                            <strong className={`chat-message-sender ${msg.type}`}>
                                 {msg.type === 'user' ? 'You:' : 'Poet AI:'}
                             </strong>
                             {msg.type === 'ai' ? (
@@ -175,7 +147,7 @@ function ChatBox() {
             </div>
 
             {/* Message Input */}
-            <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
+            <div className="message-input-area">
                 <input
                     type="text"
                     value={userMessage}
@@ -183,27 +155,12 @@ function ChatBox() {
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about the poem..."
                     disabled={loading || !selectedPoem}
-                    style={{
-                        flexGrow: 1,
-                        padding: '10px',
-                        borderRadius: '5px',
-                        border: '1px solid #ccc',
-                        fontSize: '1em'
-                    }}
+                    className="message-input"
                 />
                 <button
                     onClick={sendMessage}
                     disabled={loading || !selectedPoem || !userMessage.trim()}
-                    style={{
-                        padding: '10px 20px',
-                        borderRadius: '5px',
-                        border: 'none',
-                        backgroundColor: '#007bff',
-                        color: 'white',
-                        fontSize: '1em',
-                        cursor: 'pointer',
-                        opacity: (loading || !selectedPoem || !userMessage.trim()) ? 0.6 : 1
-                    }}
+                    className="send-button"
                 >
                     {loading ? 'Sending...' : 'Send'}
                 </button>
