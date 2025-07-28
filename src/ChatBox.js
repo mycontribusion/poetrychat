@@ -76,7 +76,7 @@ function ChatBox() {
 
         } catch (err) {
             console.error("Error sending message to AI:", err.response?.data || err.message);
-            setError("Failed to get AI response. Please try again. Check backend console for details.");
+            setError("Failed to get AI response. Please try again.");
             setChatHistory(prevHistory => prevHistory.slice(0, prevHistory.length - 1));
         } finally {
             setLoading(false);
