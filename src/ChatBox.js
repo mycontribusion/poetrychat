@@ -6,7 +6,7 @@ import './ChatBox.css'; // Import the new CSS file
 // Define your backend URL
 const BACKEND_URL = 'https://poetrychat-s.onrender.com'; // Ensure this is your deployed Render URL https://poetrychat-s.onrender.com http://localhost:5000
 
-const POETRY_BOOK_NAME = "From Behind A Young Man's Chest";
+const POETRY_BOOK_NAME = "- From Behind A Young Man's Chest";
 
 function ChatBox() {
     const [poemTitles, setPoemTitles] = useState([]);
@@ -41,7 +41,7 @@ function ChatBox() {
                 }
             } catch (err) {
                 console.error("Error fetching poem titles:", err);
-                setError("Failed to load poem titles. Please check backend.");
+                setError("Failed to load poem titles. Please refresh the page.");
             } finally {
                 setLoading(false);
             }
