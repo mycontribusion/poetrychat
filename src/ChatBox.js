@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import './ChatBox.css'; // Make sure this CSS file is in the same directory!
 
 // Define your backend URL
-const BACKEND_URL = 'http://localhost:5000'; // Ensure this is your deployed Render URL
+const BACKEND_URL = 'https://poetrychat-s.onrender.com'; // Ensure this is your deployed Render URL
 
 const POETRY_BOOK_NAME = "- From Behind A Young Man's Chest";
 
