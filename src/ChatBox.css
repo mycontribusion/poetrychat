@@ -150,23 +150,47 @@
   margin-right: 0.5rem;
 }
 
-/* Markdown content within AI messages */
-.markdown-content p:last-child {
-  margin-bottom: 0;
+/* Styling for markdown content *within* AI message bubbles */
+.message-bubble.ai p {
+  margin-bottom: 0.5em; /* Default margin for paragraphs */
 }
 
-.markdown-content strong {
+.message-bubble.ai p:last-child {
+  margin-bottom: 0; /* Remove extra margin from last paragraph */
+}
+
+.message-bubble.ai strong {
   font-weight: bold;
 }
-.markdown-content ul,
-.markdown-content ol {
-  padding-left: 1.25em;
+
+.message-bubble.ai em {
+  font-style: italic;
+}
+
+.message-bubble.ai ul,
+.message-bubble.ai ol {
+  padding-left: 1.25em; /* Standard list indentation */
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
-.markdown-content li {
+.message-bubble.ai li {
   margin-bottom: 0.25em;
 }
+
+/* --- FIX for poem text formatting in mobile (CLS) --- */
+.message-bubble.ai pre {
+  white-space: pre-wrap; /* Ensures text wraps within the code block */
+  word-wrap: break-word; /* Breaks long words if they don't fit */
+  overflow-x: auto; /* Adds horizontal scroll for lines that are still too long */
+  max-width: 100%; /* Important: Prevents overflow outside the parent bubble */
+  background-color: #e2e8f0; /* Light background for code blocks */
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem; /* Slightly smaller font for code */
+  line-height: 1.4;
+}
+/* --- END FIX --- */
+
 
 /* Input error message */
 .input-error-message {
@@ -181,8 +205,8 @@
   display: flex;
   gap: 0.75rem;
   margin-bottom: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+  justify-content: center; /* Center buttons */
 }
 
 .action-button {
@@ -219,7 +243,6 @@
 .message-input-area {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 60px;
 }
 
 .message-input {
@@ -281,8 +304,6 @@
 
   .chatbox-heading {
       font-size: 1.75rem;
-      margin-top: 15px;
-      margin-bottom: 15px;
   }
 
   .poem-selection-group {
@@ -299,22 +320,35 @@
       max-width: 90%;
   }
 
+  /* Adjusted for action buttons to stay on one line if possible, then wrap */
   .action-buttons-container {
-      flex-direction: row;
-      align-items: stretch;
+      flex-direction: row; /* Allow side-by-side arrangement */
+      align-items: center; /* Center items vertically */
+      justify-content: center; /* Center items horizontally */
+      flex-wrap: wrap; /* Allow wrapping onto the next line if space is tight */
   }
 
   .action-button {
-      width: 100%;
-      max-width: none;
+      /* These properties allow buttons to share space and wrap as needed */
+      flex: 1 1 auto; /* Allow growth, shrinking, and a basis of 'auto' */
+      min-width: 140px; /* Maintain a reasonable minimum width */
+      max-width: 200px; /* Prevent buttons from becoming too wide */
+      width: auto; /* Let flexbox control width */
   }
 
+  /* Ensure message input and send button stack */
   .message-input-area {
-      flex-direction: column;
+      flex-direction: column; /* Stack vertically */
       gap: 0.5rem;
   }
 
+  .message-input {
+      width: 100%; /* Ensure input takes full width */
+      flex-shrink: 0; /* Prevent it from shrinking too much */
+  }
+
   .send-button {
-      width: 100%;
+      width: 100%; /* Ensure button takes full width */
+      flex-shrink: 0; /* Prevent it from shrinking too much */
   }
 }
