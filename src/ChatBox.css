@@ -281,6 +281,8 @@
 
   .chatbox-heading {
       font-size: 1.75rem;
+      margin-top: 15px;
+      margin-bottom: 15px;
   }
 
   .poem-selection-group {
@@ -298,7 +300,7 @@
   }
 
   .action-buttons-container {
-      flex-direction: column;
+      flex-direction: row;
       align-items: stretch;
   }
 
