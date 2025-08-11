@@ -304,11 +304,17 @@
 
   .chatbox-heading {
       font-size: 1.75rem;
+      margin-bottom: 8px;
+      margin-top: 8px;
   }
 
   .poem-selection-group {
       flex-direction: column;
       align-items: stretch;
+  }
+
+  .poem-selection-label {
+    font-size: 10px;
   }
 
   .poem-select {
@@ -340,6 +346,7 @@
   .message-input-area {
       flex-direction: column; /* Stack vertically */
       gap: 0.5rem;
+      margin-bottom: 60px;
   }
 
   .message-input {
