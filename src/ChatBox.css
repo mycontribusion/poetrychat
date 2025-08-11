@@ -1,167 +1,318 @@
-/* src/ChatBox.css */
+/* ChatBox.css */
 
-/* Main ChatBox Container */
+/* Base container for the chatbox */
 .chatbox-container {
-  font-family: 'Arial', sans-serif;
-  max-width: 800px; /* Max width for desktop */
-  width: 95%; /* Responsive width */
-  height: 85vh; /* Reduced height to provide more vertical margin buffer */
-  margin: 7.5vh auto; /* Increased vertical margin to lift the box from edges */
-  padding: 20px; /* Uniform padding */
-  /* Increased bottom padding to lift input significantly, and account for safe area insets */
-  padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px)); /* More aggressive bottom padding */
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  background-color: #fff;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box; /* Include padding in height calculation */
+  height: 100vh; /* Full viewport height */
+  padding: 1rem;
+  background-color: #f3f4f6;
+  font-family: 'Arial', sans-serif;
+  box-sizing: border-box;
+  max-width: 900px; /* Constrain max width for better desktop view */
+  margin: 0 auto; /* Center the container */
 }
 
-/* Heading */
+/* Heading for the chatbox */
 .chatbox-heading {
+  font-size: 2.25rem;
+  font-weight: 700;
   text-align: center;
-  color: #333;
-  margin-bottom: 20px;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0;
 }
 
-/* Loading and Error Messages */
+.chatbox-heading .poetry-book-name {
+  color: #4f46e5;
+}
+
+/* Centralized messages (loading, error) */
 .chatbox-message-center {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 }
 
-.chatbox-loading {
-  color: #007bff;
+.loading-message {
+  color: #4f46e5;
 }
 
-.chatbox-error {
-  color: #f44336;
+.error-message {
+  color: #dc2626;
 }
 
-/* Poem Selection */
+/* Poem selection group */
 .poem-selection-group {
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .poem-selection-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
+  color: #374151;
+  font-weight: 500;
 }
 
 .poem-select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  font-size: 1em;
+  flex-grow: 1;
+  max-width: 24rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  outline: none;
+  transition: all 0.15s ease-in-out;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%234f46e5'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5em;
+  padding-right: 2.5rem;
+  cursor: pointer;
 }
 
-/* Chat History Display */
+.poem-select:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5), 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.poem-select:disabled {
+  background-color: #e2e8f0;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Chat history display area */
 .chat-history-display {
-  border: 1px solid #eee;
-  border-radius: 5px;
-  padding: 15px;
-  flex-grow: 1; /* This makes it take up available space */
-  overflow-y: auto; /* Enable scrolling for chat history */
-  margin-bottom: 20px; /* Space between history and input */
-  background-color: #f9f9f9;
+  flex: 1;
+  overflow-y: auto;
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1rem;
 }
 
 .chat-history-empty-message {
-  color: #888;
   text-align: center;
-  margin: auto; /* Centers the text vertically within the flex container */
+  color: #6b7280;
+  font-style: italic;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
-/* Individual Chat Message */
+/* Individual chat messages */
 .chat-message {
-  padding: 8px 12px;
-  border-radius: 15px;
-  max-width: 80%;
-  word-wrap: break-word;
-  white-space: pre-wrap; /* Preserve whitespace and line breaks for markdown */
+  display: flex;
 }
 
 .chat-message.user {
-  align-self: flex-end; /* Align user messages to the right */
-  background-color: #e0f7fa;
-  border: 1px solid #b2ebf2;
-  margin-left: auto; /* Push user message to the right */
+  justify-content: flex-end;
 }
 
 .chat-message.ai {
-  align-self: flex-start; /* Align AI messages to the left */
-  background-color: #f0f0f0;
-  border: 1px solid #e0e0e0;
-  margin-right: auto; /* Push AI message to the left */
+  justify-content: flex-start;
 }
 
-.chat-message-sender {
-  color: #333; /* Default for AI */
+.message-bubble {
+  max-width: 70%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.chat-message-sender.user {
-  color: #00796b; /* Specific color for user sender */
+.message-bubble.user {
+  background-color: #6366f1;
+  color: #ffffff;
+  border-bottom-right-radius: 0;
 }
 
-/* Message Input Area */
+.message-bubble.ai {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  border-bottom-left-radius: 0;
+}
+
+.message-sender {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+/* Markdown content within AI messages */
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content strong {
+  font-weight: bold;
+}
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.25em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+.markdown-content li {
+  margin-bottom: 0.25em;
+}
+
+/* Input error message */
+.input-error-message {
+  text-align: center;
+  color: #ef4444;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Action Buttons Container */
+.action-buttons-container {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background-color: #4f46e5;
+  cursor: pointer;
+  border: none;
+  flex: 1;
+  min-width: 140px;
+  max-width: 200px;
+}
+
+.action-button:hover {
+  background-color: #4338ca;
+}
+
+.action-button:active {
+  background-color: #3730a3;
+}
+
+.action-button:disabled {
+  background-color: #a78bfa;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+
+/* Message input area */
 .message-input-area {
   display: flex;
-  gap: 10px;
+  gap: 0.75rem;
+  margin-bottom: 60px;
 }
 
 .message-input {
-  flex-grow: 1;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  font-size: 1em;
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  outline: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.message-input:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5), 0 0 0 4px rgba(99, 102, 241, 0.2);
 }
 
 .send-button {
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  font-size: 1em;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background-color: #4f46e5;
   cursor: pointer;
-  transition: opacity 0.2s ease-in-out;
+  border: none;
+}
+
+.send-button:hover {
+  background-color: #4338ca;
+}
+
+.send-button:active {
+  background-color: #3730a3;
 }
 
 .send-button:disabled {
-  opacity: 0.6;
+  background-color: #a78bfa;
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
-/* Basic responsiveness for smaller screens */
+/* Animation for thinking AI */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.typing-indicator {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive adjustments */
 @media (max-width: 600px) {
   .chatbox-container {
-      padding: 15px;
-      /* Adjust padding-bottom for mobile, also considering safe area insets */
-      padding-bottom: calc(45px + env(safe-area-inset-bottom, 0px)); /* Even more aggressive for mobile */
-      width: 98%; /* Slightly wider on very small screens */
-      height: 98vh; /* Take up more height on small screens */
-      margin: 1vh auto; /* Smaller margins */
+      padding: 0.5rem;
   }
 
-  .chat-history-display {
-      padding: 10px;
+  .chatbox-heading {
+      font-size: 1.75rem;
   }
 
-  .chat-message {
-      max-width: 90%; /* Allow messages to take more width */
+  .poem-selection-group {
+      flex-direction: column;
+      align-items: stretch;
   }
 
-  .message-input, .send-button {
-      font-size: 0.9em; /* Slightly smaller font on mobile */
-      padding: 8px 15px;
-      margin-bottom: 100px;
+  .poem-select {
+      max-width: none;
+      width: 100%;
+  }
+
+  .message-bubble {
+      max-width: 90%;
+  }
+
+  .action-buttons-container {
+      flex-direction: column;
+      align-items: stretch;
+  }
+
+  .action-button {
+      width: 100%;
+      max-width: none;
+  }
+
+  .message-input-area {
+      flex-direction: column;
+      gap: 0.5rem;
+  }
+
+  .send-button {
+      width: 100%;
   }
 }
