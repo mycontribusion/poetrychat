@@ -3,7 +3,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import './ChatBox.css';
 
-const BACKEND_URL = 'http://localhost:5000';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://poetrychat-s.onrender.com';
 const POETRY_BOOK_NAME = "From Behind A Young Man's Chest";
 
 function ChatBox() {
