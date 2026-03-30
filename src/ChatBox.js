@@ -122,10 +122,15 @@ function ChatBox() {
     };
 
     const handleKeyDown = (e) => {
-        // Enter sends, Shift+Enter adds newline
+        // Desktop: Enter sends, Shift+Enter adds newline
+        // Mobile: Enter adds newline natively
         if (e.key === 'Enter' && !e.shiftKey && !loadingAiResponse && !loadingPoemTitles) {
-            e.preventDefault();
-            sendMessage();
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (!isMobile) {
+                e.preventDefault();
+                sendMessage();
+            }
+            // On mobile, do nothing and let the default newline behavior happen
         }
     };
 
