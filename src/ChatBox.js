@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import './ChatBox.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://poetrychat-s.onrender.com';
-const POETRY_BOOK_NAME = "From Behind A Young Man's Chest";
+const POETRY_BOOK_NAME = "From Behind a Young Man's Chest: A poetry collection";
 
 function ChatBox() {
     const [poemTitles, setPoemTitles] = useState([]);
@@ -23,6 +23,7 @@ function ChatBox() {
 
     const chatHistoryRef = useRef(null);
     const textareaRef = useRef(null);
+    const abortControllerRef = useRef(null);
 
     // Apply theme to <html>
     useEffect(() => {
@@ -77,9 +78,23 @@ function ChatBox() {
         try {
             setError(null);
             setLoadingAiResponse(true);
+
+            abortControllerRef.current = new AbortController();
+
+            const recentHistory = chatHistory
+                .filter(msg => msg.status === 'sent')
+                .slice(-6)
+                .map(msg => ({
+                    role: msg.type === 'user' ? 'user' : 'model',
+                    text: msg.text
+                }));
+
             const response = await axios.post(`${BACKEND_URL}/api/chat`, {
                 message: messagePrompt,
                 poemTitle: selectedPoem,
+                history: recentHistory
+            }, {
+                signal: abortControllerRef.current.signal
             });
 
             // Mark user message as 'sent' and add AI reply
@@ -88,11 +103,21 @@ function ChatBox() {
                 return [...updatedHistory, { id: Date.now() + 1, type: 'ai', text: response.data.reply, status: 'sent' }];
             });
         } catch (err) {
-            console.error("Error sending message:", err.response?.data || err.message);
-            // Mark user message as 'failed'
-            setChatHistory(prev => prev.map(msg => msg.id === messageId ? { ...msg, status: 'failed' } : msg));
+            if (axios.isCancel(err)) {
+                setChatHistory(prev => prev.map(msg => msg.id === messageId ? { ...msg, status: 'failed', errorText: 'Stopped by user.' } : msg));
+            } else {
+                console.error("Error sending message:", err.response?.data || err.message);
+                setChatHistory(prev => prev.map(msg => msg.id === messageId ? { ...msg, status: 'failed' } : msg));
+            }
         } finally {
             setLoadingAiResponse(false);
+            abortControllerRef.current = null;
+        }
+    };
+
+    const stopRequest = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
         }
     };
 
@@ -125,7 +150,8 @@ function ChatBox() {
         // Desktop: Enter sends, Shift+Enter adds newline
         // Mobile: Enter adds newline natively
         if (e.key === 'Enter' && !e.shiftKey && !loadingAiResponse && !loadingPoemTitles) {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            // Check touch capability, screen width, or user agent to confidently detect mobile
+            const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 700 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (!isMobile) {
                 e.preventDefault();
                 sendMessage();
@@ -178,7 +204,7 @@ function ChatBox() {
                         </svg>
                     </div>
                     <h1 className="book-title">{POETRY_BOOK_NAME}</h1>
-                    <p className="book-subtitle">An AI-powered poetry companion</p>
+                    <p className="book-subtitle">An AI-powered poetry companion<br />by <strong>Ahmad Musa</strong></p>
                     <div className="title-ornament"><span />❧<span /></div>
                 </div>
 
@@ -254,7 +280,7 @@ function ChatBox() {
                                     }
                                     {msg.status === 'failed' && (
                                         <div className="message-error-state">
-                                            <span className="error-text">Message failed to send.</span>
+                                            <span className="error-text">{msg.errorText || "Message failed to send."}</span>
                                             <button className="retry-btn" onClick={() => retryMessage(msg.id, msg.text)} disabled={loadingAiResponse}>
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                     <polyline points="1 4 1 10 7 10"></polyline>
@@ -302,16 +328,28 @@ function ChatBox() {
                             disabled={loadingPoemTitles || loadingAiResponse || !selectedPoem}
                             className="message-input"
                         />
-                        <button
-                            onClick={sendMessage}
-                            disabled={loadingPoemTitles || loadingAiResponse || !selectedPoem || !userMessage.trim()}
-                            className="send-button"
-                        >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="22" y1="2" x2="11" y2="13" />
-                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                            </svg>
-                        </button>
+                        {loadingAiResponse ? (
+                            <button
+                                onClick={stopRequest}
+                                className="send-button stop-button"
+                                title="Stop generating"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="6" width="12" height="12" rx="2" />
+                                </svg>
+                            </button>
+                        ) : (
+                            <button
+                                onClick={sendMessage}
+                                disabled={loadingPoemTitles || !selectedPoem || !userMessage.trim()}
+                                className="send-button"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13" />
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                                </svg>
+                            </button>
+                        )}
                     </div>
                 </footer>
             </main>
