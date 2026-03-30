@@ -266,7 +266,7 @@ function ChatBox() {
                         <div className="chat-empty">
                             <div className="chat-empty-icon">✦</div>
                             <p>Ask anything about <strong>{selectedPoem || 'the selected poem'}</strong></p>
-                            <p className="chat-empty-hint">Use quick actions on the left or type your own question below.<br />Press <kbd>Shift+Enter</kbd> for a new line.</p>
+                            <p className="chat-empty-hint">Use quick actions on the left or type your own question below.</p>
                         </div>
                     ) : (
                         chatHistory.map((msg) => (
@@ -324,7 +324,7 @@ function ChatBox() {
                             value={userMessage}
                             onChange={handleMessageChange}
                             onKeyDown={handleKeyDown}
-                            placeholder="Ask about the poem… (Shift+Enter for new line)"
+                            placeholder="Ask about the poem…"
                             disabled={loadingPoemTitles || loadingAiResponse || !selectedPoem}
                             className="message-input"
                         />

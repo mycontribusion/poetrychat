@@ -550,7 +550,7 @@ kbd {
 
 /* ── Footer ──────────────────────────────────────────── */
 .chat-footer {
-  padding: 0.75rem 0.875rem 0.875rem;
+  padding: 0.75rem 0.875rem calc(2.5rem + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--sidebar-border);
   background: var(--header-bg);
   flex-shrink: 0;
