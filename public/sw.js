@@ -3,9 +3,7 @@ const ASSETS = [
     '/',
     '/index.html',
     '/manifest.json',
-    '/favicon.ico',
-    '/logo192.png',
-    '/logo512.png'
+    '/book-cover.jpg'
 ];
 
 self.addEventListener('install', (event) => {

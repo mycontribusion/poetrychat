@@ -185,23 +185,8 @@ function ChatBox() {
             <aside className="sidebar">
                 {/* Desktop-only: book identity */}
                 <div className="sidebar-top">
-                    <div className="book-icon" aria-hidden="true">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="8" y="4" width="28" height="40" rx="3" fill="url(#bookGrad)" />
-                            <rect x="10" y="6" width="24" height="36" rx="2" fill="rgba(255,255,255,0.08)" />
-                            <line x1="14" y1="14" x2="30" y2="14" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" />
-                            <line x1="14" y1="19" x2="30" y2="19" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round" />
-                            <line x1="14" y1="24" x2="24" y2="24" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round" />
-                            <rect x="6" y="4" width="4" height="40" rx="2" fill="url(#spineGrad)" />
-                            <defs>
-                                <linearGradient id="bookGrad" x1="8" y1="4" x2="36" y2="44" gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="#7c3aed" /><stop offset="1" stopColor="#4f46e5" />
-                                </linearGradient>
-                                <linearGradient id="spineGrad" x1="6" y1="4" x2="10" y2="44" gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="#5b21b6" /><stop offset="1" stopColor="#3730a3" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
+                    <div className="book-cover-container">
+                        <img src="/book-cover.jpg" alt="Book Cover" className="book-cover-image" />
                     </div>
                     <h1 className="book-title">{POETRY_BOOK_NAME}</h1>
                     <p className="book-subtitle">An AI-powered poetry companion<br />by <strong>Ahmad Musa</strong></p>
