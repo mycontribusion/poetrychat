@@ -31,12 +31,16 @@ function ChatBox() {
         localStorage.setItem('poetrychat-theme', theme);
     }, [theme]);
 
-    // Scroll to bottom on new messages
+    // Scroll to bottom when user sends a message or while AI is thinking. 
+    // We intentionally do NOT scroll when the AI's final answer arrives so you can read it from the top down.
     useEffect(() => {
         if (chatHistoryRef.current) {
-            chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+            const lastMsg = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
+            if (loadingAiResponse || (lastMsg && lastMsg.type === 'user')) {
+                chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+            }
         }
-    }, [chatHistory]);
+    }, [chatHistory, loadingAiResponse]);
 
     // Reset textarea height after sending
     useEffect(() => {
