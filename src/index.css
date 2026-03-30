@@ -1,24 +1,146 @@
 /* src/index.css */
-html, body, #root {
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ── Dark theme (default) ─────────────────────────────── */
+:root {
+  --bg-base: #0f0e17;
+  --bg-surface: #1a1827;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-focus: rgba(139, 92, 246, 0.6);
+
+  --accent: #8b5cf6;
+  --accent-light: #a78bfa;
+  --accent-dark: #7c3aed;
+  --accent-glow: rgba(139, 92, 246, 0.28);
+
+  --text-primary: #ede9fe;
+  --text-secondary: #a9a3c2;
+  --text-muted: #6b6487;
+
+  --user-bubble-bg: linear-gradient(135deg, #6d28d9, #8b5cf6);
+  --user-bubble-text: #fff;
+  --ai-bubble-bg: rgba(255, 255, 255, 0.05);
+  --ai-bubble-border: rgba(255, 255, 255, 0.09);
+  --ai-bubble-text: #ede9fe;
+
+  --sidebar-bg: rgba(255, 255, 255, 0.025);
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --header-bg: rgba(255, 255, 255, 0.02);
+
+  --orb-1: rgba(124, 58, 237, 0.2);
+  --orb-2: rgba(99, 102, 241, 0.16);
+  --orb-3: rgba(167, 139, 250, 0.1);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  --scrollbar-thumb: rgba(139, 92, 246, 0.5);
+  --scrollbar-track: transparent;
+}
+
+/* ── Light theme overrides ────────────────────────────── */
+:root[data-theme="light"] {
+  --bg-base: #f5f3ff;
+  --bg-surface: #ede9fe;
+  --bg-glass: rgba(139, 92, 246, 0.06);
+  --bg-glass-hover: rgba(139, 92, 246, 0.1);
+  --border: rgba(109, 40, 217, 0.12);
+  --border-focus: rgba(109, 40, 217, 0.5);
+
+  --text-primary: #1e1243;
+  --text-secondary: #4c3d8a;
+  --text-muted: #9990c4;
+
+  --user-bubble-bg: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  --user-bubble-text: #fff;
+  --ai-bubble-bg: rgba(255, 255, 255, 0.8);
+  --ai-bubble-border: rgba(139, 92, 246, 0.18);
+  --ai-bubble-text: #1e1243;
+
+  --sidebar-bg: rgba(255, 255, 255, 0.6);
+  --sidebar-border: rgba(139, 92, 246, 0.12);
+  --header-bg: rgba(255, 255, 255, 0.5);
+
+  --orb-1: rgba(139, 92, 246, 0.12);
+  --orb-2: rgba(99, 102, 241, 0.1);
+  --orb-3: rgba(167, 139, 250, 0.08);
+
+  --shadow-sm: 0 2px 8px rgba(109, 40, 217, 0.1);
+  --shadow-md: 0 8px 24px rgba(109, 40, 217, 0.12);
+
+  --scrollbar-thumb: rgba(139, 92, 246, 0.35);
+}
+
+/* ── Reset & base ─────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  height: 100%; /* Ensure html, body, and root take full viewport height */
-  overflow: hidden; /* Prevent body scrollbar if content overflows */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f0f2f5; /* Light background for the whole page */
-  display: flex; /* Use flex to center content */
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:root[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse 70% 50% at 5% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 95% 100%, rgba(99, 102, 241, 0.06) 0%, transparent 60%),
+    var(--bg-base);
+}
+
+:root:not([data-theme="light"]) body {
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(139, 92, 246, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+    var(--bg-base);
+}
+
+#root {
+  display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .App {
   width: 100%;
-  height: 100%; /* App takes full height of #root */
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Global scrollbars */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
 }
