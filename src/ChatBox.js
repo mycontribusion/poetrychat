@@ -7,8 +7,9 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://poetrychat-s.o
 const POETRY_BOOK_NAME = "From Behind a Young Man's Chest: A poetry collection";
 
 function ChatBox() {
-    const [poemTitles, setPoemTitles] = useState([]);
+    const [poemData, setPoemData] = useState([]);
     const [selectedPoem, setSelectedPoem] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [userMessage, setUserMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [loadingPoemTitles, setLoadingPoemTitles] = useState(false);
@@ -56,8 +57,8 @@ function ChatBox() {
                 setError(null);
                 setLoadingPoemTitles(true);
                 const response = await axios.get(`${BACKEND_URL}/api/poems`);
-                setPoemTitles(response.data);
-                if (response.data.length > 0) setSelectedPoem(response.data[0]);
+                setPoemData(response.data);
+                if (response.data.length > 0) setSelectedPoem(response.data[0].title);
             } catch (err) {
                 console.error("Error fetching poem titles:", err);
                 setError("Failed to load poem titles. Please refresh.");
@@ -179,6 +180,13 @@ function ChatBox() {
 
     const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
 
+    const filteredPoems = poemData.filter(p => {
+        const titleStr = typeof p === 'string' ? p : (p?.title || '');
+        const bodyStr = typeof p === 'string' ? '' : (p?.body || '');
+        const q = searchQuery.toLowerCase();
+        return titleStr.toLowerCase().includes(q) || bodyStr.toLowerCase().includes(q);
+    });
+
     return (
         <div className="app-shell">
             <div className="orb orb-1" />
@@ -203,18 +211,37 @@ function ChatBox() {
                     {loadingPoemTitles ? (
                         <p className="sidebar-loading">Loading poems…</p>
                     ) : (
-                        <select
-                            id="poem-select"
-                            value={selectedPoem}
-                            onChange={(e) => { setSelectedPoem(e.target.value); setInputError(''); }}
-                            disabled={loadingPoemTitles || poemTitles.length === 0 || loadingAiResponse}
-                            className="poem-select"
-                        >
-                            {poemTitles.length === 0
-                                ? <option value="">No poems available</option>
-                                : poemTitles.map(t => <option key={t} value={t}>{t}</option>)
-                            }
-                        </select>
+                        <div className="poem-selector-container">
+                            <div className="poem-search-wrapper">
+                                <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input
+                                    type="text"
+                                    placeholder="Search poems..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="poem-search-input"
+                                    disabled={poemData.length === 0 || loadingAiResponse}
+                                />
+                            </div>
+                            <select
+                                id="poem-select"
+                                value={selectedPoem}
+                                onChange={(e) => { setSelectedPoem(e.target.value); setInputError(''); }}
+                                disabled={poemData.length === 0 || loadingAiResponse}
+                                className="poem-select"
+                            >
+                                {filteredPoems.length === 0
+                                    ? <option value="">No matches found</option>
+                                    : filteredPoems.map(p => {
+                                        const title = typeof p === 'string' ? p : (p?.title || 'Unknown');
+                                        return <option key={title} value={title}>{title}</option>;
+                                    })
+                                }
+                            </select>
+                        </div>
                     )}
                 </div>
 
@@ -258,30 +285,43 @@ function ChatBox() {
                             <p className="chat-empty-hint">Use quick actions on the left or type your own question below.</p>
                         </div>
                     ) : (
-                        chatHistory.map((msg) => (
-                            <div key={msg.id} className={`message-row ${msg.type} ${msg.status === 'failed' ? 'failed' : ''}`}>
-                                <div className="avatar">{msg.type === 'user' ? 'You' : 'AI'}</div>
-                                <div className={`message-bubble ${msg.type}`}>
-                                    {msg.type === 'ai' && <span className="open-quote">"</span>}
-                                    {msg.type === 'ai'
-                                        ? <ReactMarkdown>{msg.text}</ReactMarkdown>
-                                        : <p>{msg.text}</p>
-                                    }
-                                    {msg.status === 'failed' && (
-                                        <div className="message-error-state">
-                                            <span className="error-text">{msg.errorText || "Message failed to send."}</span>
-                                            <button className="retry-btn" onClick={() => retryMessage(msg.id, msg.text)} disabled={loadingAiResponse}>
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polyline points="1 4 1 10 7 10"></polyline>
-                                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                                                </svg>
-                                                Retry
-                                            </button>
+                        chatHistory.map((msg, index) => {
+                            const prevMsg = index > 0 ? chatHistory[index - 1] : null;
+                            // Show divider if poemContext exists and it's different from the previous message
+                            const showPoemContext = msg.poemContext && (!prevMsg || prevMsg.poemContext !== msg.poemContext);
+
+                            return (
+                                <React.Fragment key={msg.id}>
+                                    {showPoemContext && (
+                                        <div className="chat-poem-divider">
+                                            <span>Discussing: <strong>{msg.poemContext}</strong></span>
                                         </div>
                                     )}
-                                </div>
-                            </div>
-                        ))
+                                    <div className={`message-row ${msg.type} ${msg.status === 'failed' ? 'failed' : ''}`}>
+                                        <div className="avatar">{msg.type === 'user' ? 'You' : 'AI'}</div>
+                                        <div className={`message-bubble ${msg.type}`}>
+                                            {msg.type === 'ai' && <span className="open-quote">"</span>}
+                                            {msg.type === 'ai'
+                                                ? <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                                : <p>{msg.text}</p>
+                                            }
+                                            {msg.status === 'failed' && (
+                                                <div className="message-error-state">
+                                                    <span className="error-text">{msg.errorText || "Message failed to send."}</span>
+                                                    <button className="retry-btn" onClick={() => retryMessage(msg.id, msg.text)} disabled={loadingAiResponse}>
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                            <polyline points="1 4 1 10 7 10"></polyline>
+                                                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                                                        </svg>
+                                                        Retry
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </React.Fragment>
+                            );
+                        })
                     )}
                     {loadingAiResponse && (
                         <div className="message-row ai">
