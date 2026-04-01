@@ -282,7 +282,7 @@ function ChatBox() {
                         <div className="chat-empty">
                             <div className="chat-empty-icon">✦</div>
                             <p>Ask anything about <strong>{selectedPoem || 'the selected poem'}</strong></p>
-                            <p className="chat-empty-hint">Use quick actions on the left or type your own question below.</p>
+                            <p className="chat-empty-hint">Use quick actions above the input or type your own question below.</p>
                         </div>
                     ) : (
                         chatHistory.map((msg, index) => {
