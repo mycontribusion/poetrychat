@@ -42,7 +42,19 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('%PUBLIC_URL%/sw.js').catch(err => console.log('SW registration failed:', err));
+        navigator.serviceWorker.register('%PUBLIC_URL%/sw.js').then(reg => {
+          reg.onupdatefound = () => {
+            const installingWorker = reg.installing;
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  // New update available, reload to apply
+                  window.location.reload();
+                }
+              }
+            };
+          };
+        }).catch(err => console.log('SW registration failed:', err));
       });
     }
   </script>

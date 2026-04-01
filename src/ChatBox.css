@@ -479,11 +479,11 @@ kbd {
   position: relative;
   max-width: 88%;
   /* Slightly wider on mobile for better text flow */
-  padding: 0.8rem 1rem;
+  padding: 0.75rem 0.95rem;
   border-radius: 14px;
-  font-size: 0.95rem;
-  /* Increased for mobile readability */
-  line-height: 1.6;
+  font-size: 0.92rem;
+  /* Balanced for mobile readability */
+  line-height: 1.55;
   box-shadow: var(--shadow-sm);
   transition: background 0.3s ease;
 }
@@ -853,6 +853,7 @@ kbd {
   }
 
   .sidebar-section {
+    flex: none;
     flex-direction: column;
     align-items: flex-start;
     margin-bottom: 1.25rem;
@@ -860,6 +861,7 @@ kbd {
   }
 
   .poem-selector-container {
+    flex: none;
     flex-direction: column;
     align-items: stretch;
   }
@@ -877,10 +879,16 @@ kbd {
   }
 
   .poem-select {
+    flex: none;
     max-width: none;
     width: 100%;
-    padding: 0.575rem 2rem 0.575rem 0.8rem;
-    font-size: 0.85rem;
+    padding: 0.45rem 1.75rem 0.45rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .poem-search-input {
+    padding: 0.45rem 0.4rem 0.45rem 1.75rem;
+    font-size: 0.8rem;
   }
 
   .quick-actions {
