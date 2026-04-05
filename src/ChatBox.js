@@ -180,11 +180,11 @@ function ChatBox() {
                 msg.poemContext === selectedPoem &&
                 msg.text.includes(`Please provide the full text of the poem: "${selectedPoem}"`)
             );
-
             if (!alreadyFetched) {
                 sendRequestToAI(`Please provide the full text of the poem: "${selectedPoem}".`);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedPoem, poemData.length]);
 
     const handleKeyDown = (e) => {
