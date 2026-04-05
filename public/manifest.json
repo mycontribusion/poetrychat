@@ -1,6 +1,7 @@
 {
   "short_name": "PoetryChat",
-  "name": "PoetryChat AI",
+  "name": "From Behind a Young Man's Chest - PoetryChat",
+  "description": "Chat with an AI about Ahmad Musa's poetry collection: From Behind a Young Man's Chest.",
   "icons": [
     {
       "src": "book-cover.jpg",

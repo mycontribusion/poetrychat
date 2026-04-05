@@ -6,6 +6,16 @@ import './ChatBox.css';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://poetrychat-s.onrender.com';
 const POETRY_BOOK_NAME = "From Behind a Young Man's Chest: A poetry collection";
 
+const SUGGESTED_QUESTIONS = [
+    "What is the main theme?",
+    "Line-by-line breakdown",
+    "Analyze emotions",
+    "Analyse the tone.",
+    "Analyse the structure.",
+    "Deep analysis",
+    "Suggest 9 advanced linguistic questions"
+];
+
 function ChatBox() {
     const [poemData, setPoemData] = useState([]);
     const [selectedPoem, setSelectedPoem] = useState('');
@@ -14,6 +24,7 @@ function ChatBox() {
     const [chatHistory, setChatHistory] = useState([]);
     const [loadingPoemTitles, setLoadingPoemTitles] = useState(false);
     const [loadingAiResponse, setLoadingAiResponse] = useState(false);
+    const [copiedId, setCopiedId] = useState(null);
     const [error, setError] = useState(null);
     const [inputError, setInputError] = useState('');
     const [theme, setTheme] = useState(() => {
@@ -74,7 +85,13 @@ function ChatBox() {
 
         // If it's a new message, add it to history with 'sending' status
         if (!existingMessageId) {
-            setChatHistory(prev => [...prev, { id: messageId, type: 'user', text: messagePrompt, status: 'sending' }]);
+            setChatHistory(prev => [...prev, {
+                id: messageId,
+                type: 'user',
+                text: messagePrompt,
+                status: 'sending',
+                poemContext: selectedPoem
+            }]);
         } else {
             // If it's a retry, update the status back to 'sending'
             setChatHistory(prev => prev.map(msg => msg.id === messageId ? { ...msg, status: 'sending' } : msg));
@@ -105,7 +122,13 @@ function ChatBox() {
             // Mark user message as 'sent' and add AI reply
             setChatHistory(prev => {
                 const updatedHistory = prev.map(msg => msg.id === messageId ? { ...msg, status: 'sent' } : msg);
-                return [...updatedHistory, { id: Date.now() + 1, type: 'ai', text: response.data.reply, status: 'sent' }];
+                return [...updatedHistory, {
+                    id: Date.now() + 1,
+                    type: 'ai',
+                    text: response.data.reply,
+                    status: 'sent',
+                    poemContext: selectedPoem
+                }];
             });
         } catch (err) {
             if (axios.isCancel(err)) {
@@ -130,6 +153,15 @@ function ChatBox() {
         await sendRequestToAI(text, messageId);
     };
 
+    const copyToClipboard = (text, id) => {
+        navigator.clipboard.writeText(text).then(() => {
+            setCopiedId(id);
+            setTimeout(() => setCopiedId(null), 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    };
+
     const sendMessage = async () => {
         setInputError('');
         if (!selectedPoem) { setInputError("Please select a poem."); return; }
@@ -139,17 +171,21 @@ function ChatBox() {
         await sendRequestToAI(msg);
     };
 
-    const getPoemTextFromAI = async () => {
-        setInputError('');
-        if (!selectedPoem) { setInputError("Please select a poem first."); return; }
-        await sendRequestToAI(`Please provide the full text of the poem: "${selectedPoem}".`);
-    };
+    // Auto-fetch poem text when selectedPoem changes
+    useEffect(() => {
+        if (selectedPoem && poemData.length > 0) {
+            // Check if we already just fetched this poem to avoid loops 
+            // (though selectedPoem changing is the primary trigger)
+            const alreadyFetched = chatHistory.some(msg =>
+                msg.poemContext === selectedPoem &&
+                msg.text.includes(`Please provide the full text of the poem: "${selectedPoem}"`)
+            );
 
-    const getSuggestedQuestionsFromAI = async () => {
-        setInputError('');
-        if (!selectedPoem) { setInputError("Please select a poem first."); return; }
-        await sendRequestToAI(`Suggest some discussion questions about the poem: "${selectedPoem}".`);
-    };
+            if (!alreadyFetched) {
+                sendRequestToAI(`Please provide the full text of the poem: "${selectedPoem}".`);
+            }
+        }
+    }, [selectedPoem, poemData.length]);
 
     const handleKeyDown = (e) => {
         // Desktop: Enter sends, Shift+Enter adds newline
@@ -305,6 +341,23 @@ function ChatBox() {
                                                 ? <ReactMarkdown>{msg.text}</ReactMarkdown>
                                                 : <p>{msg.text}</p>
                                             }
+                                            <button
+                                                className={`copy-button ${copiedId === msg.id ? 'copied' : ''}`}
+                                                onClick={() => copyToClipboard(msg.text, msg.id)}
+                                                title="Copy to clipboard"
+                                                aria-label="Copy message"
+                                            >
+                                                {copiedId === msg.id ? (
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                                    </svg>
+                                                ) : (
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                    </svg>
+                                                )}
+                                            </button>
                                             {msg.status === 'failed' && (
                                                 <div className="message-error-state">
                                                     <span className="error-text">{msg.errorText || "Message failed to send."}</span>
@@ -335,17 +388,29 @@ function ChatBox() {
 
                 {/* Footer */}
                 <footer className="chat-footer">
-                    {/* Quick actions moved above input */}
-                    <div className="footer-quick-actions">
-                        <button onClick={getPoemTextFromAI} disabled={loadingPoemTitles || loadingAiResponse || !selectedPoem} className="footer-action-btn">
-                            <span className="btn-icon">📜</span> Get Poem Text
-                        </button>
-                        <button onClick={getSuggestedQuestionsFromAI} disabled={loadingPoemTitles || loadingAiResponse || !selectedPoem} className="footer-action-btn">
-                            <span className="btn-icon">💡</span> Suggest Questions
-                        </button>
-                    </div>
 
                     {inputError && <p className="input-error">{inputError}</p>}
+
+                    {/* Suggestive Questions */}
+                    <div className="suggested-questions-row">
+                        {SUGGESTED_QUESTIONS.map((q, idx) => (
+                            <button
+                                key={idx}
+                                className="suggested-question-btn"
+                                onClick={() => {
+                                    setUserMessage(q);
+                                    // Small delay to ensure state update if we were to send immediately,
+                                    // but user asked for "directly be asked", so I'll send it.
+                                    sendRequestToAI(q);
+                                    setUserMessage('');
+                                }}
+                                disabled={loadingAiResponse || !selectedPoem}
+                            >
+                                {q}
+                            </button>
+                        ))}
+                    </div>
+
                     <div className="input-row">
                         <textarea
                             ref={textareaRef}

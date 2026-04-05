@@ -479,13 +479,50 @@ kbd {
   position: relative;
   max-width: 88%;
   /* Slightly wider on mobile for better text flow */
-  padding: 0.75rem 0.95rem;
+  padding: 0.75rem 2.2rem 0.75rem 0.95rem;
   border-radius: 14px;
   font-size: 0.92rem;
   /* Balanced for mobile readability */
   line-height: 1.55;
   box-shadow: var(--shadow-sm);
   transition: background 0.3s ease;
+}
+
+/* Copy button */
+.copy-button {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.message-bubble:hover .copy-button,
+.copy-button.copied {
+  opacity: 1;
+}
+
+.copy-button:hover {
+  background: var(--bg-glass-hover);
+  color: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.copy-button.copied {
+  color: #34d399;
+  border-color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
 }
 
 .message-bubble.user {
@@ -664,36 +701,46 @@ kbd {
   padding-bottom: 4px;
 }
 
-.footer-quick-actions::-webkit-scrollbar {
+/* Suggestive Questions */
+.suggested-questions-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.suggested-questions-row::-webkit-scrollbar {
   display: none;
 }
 
-.footer-action-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
-  background: var(--bg-glass);
-  border: 1px solid var(--border);
+.suggested-question-btn {
+  padding: 0.45rem 0.85rem;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 99px;
-  /* Pill shape */
-  color: var(--text-secondary);
-  font-family: 'Inter', sans-serif;
+  color: var(--accent-light);
+  font-family: inherit;
   font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
-.footer-action-btn:hover:not(:disabled) {
-  background: var(--bg-glass-hover);
+.suggested-question-btn:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.15);
   border-color: var(--accent);
-  color: var(--text-primary);
+  transform: translateY(-2px);
 }
 
-.footer-action-btn:disabled {
-  opacity: 0.3;
+.suggested-question-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.suggested-question-btn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
