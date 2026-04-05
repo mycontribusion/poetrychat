@@ -3,7 +3,10 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import './ChatBox.css';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://poetrychat-s.onrender.com';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ||
+    (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+        ? 'http://localhost:5000'
+        : 'https://poetrychat-s.onrender.com');
 const POETRY_BOOK_NAME = "From Behind a Young Man's Chest: A poetry collection";
 
 const SUGGESTED_QUESTIONS = [
@@ -64,15 +67,23 @@ function ChatBox() {
     // Fetch poem titles
     useEffect(() => {
         const fetchPoemTitles = async () => {
+            console.log("Attempting to fetch poems from:", BACKEND_URL);
             try {
                 setError(null);
                 setLoadingPoemTitles(true);
                 const response = await axios.get(`${BACKEND_URL}/api/poems`);
+                console.log("Poem titles fetched successfully:", response.data.length, "poems found.");
                 setPoemData(response.data);
                 if (response.data.length > 0) setSelectedPoem(response.data[0].title);
             } catch (err) {
-                console.error("Error fetching poem titles:", err);
-                setError("Failed to load poem titles. Please refresh.");
+                console.error("Detailed error fetching poem titles:", {
+                    message: err.message,
+                    code: err.code,
+                    response: err.response?.data,
+                    status: err.response?.status,
+                    url: `${BACKEND_URL}/api/poems`
+                });
+                setError(`Failed to load poem titles. (URL: ${BACKEND_URL}, Error: ${err.message})`);
             } finally {
                 setLoadingPoemTitles(false);
             }
@@ -262,21 +273,34 @@ function ChatBox() {
                                     disabled={poemData.length === 0 || loadingAiResponse}
                                 />
                             </div>
-                            <select
-                                id="poem-select"
-                                value={selectedPoem}
-                                onChange={(e) => { setSelectedPoem(e.target.value); setInputError(''); }}
-                                disabled={poemData.length === 0 || loadingAiResponse}
-                                className="poem-select"
-                            >
-                                {filteredPoems.length === 0
-                                    ? <option value="">No matches found</option>
-                                    : filteredPoems.map(p => {
-                                        const title = typeof p === 'string' ? p : (p?.title || 'Unknown');
-                                        return <option key={title} value={title}>{title}</option>;
-                                    })
-                                }
-                            </select>
+                            <div className="poem-selector-actions">
+                                <select
+                                    id="poem-select"
+                                    value={selectedPoem}
+                                    onChange={(e) => { setSelectedPoem(e.target.value); setInputError(''); }}
+                                    disabled={poemData.length === 0 || loadingAiResponse}
+                                    className="poem-select"
+                                >
+                                    {filteredPoems.length === 0
+                                        ? <option value="">No matches found</option>
+                                        : filteredPoems.map(p => {
+                                            const title = typeof p === 'string' ? p : (p?.title || 'Unknown');
+                                            return <option key={title} value={title}>{title}</option>;
+                                        })
+                                    }
+                                </select>
+                                <button
+                                    className="poem-load-btn"
+                                    onClick={() => selectedPoem && sendRequestToAI(`Please provide the full text of the poem: "${selectedPoem}".`)}
+                                    disabled={!selectedPoem || loadingAiResponse}
+                                    title="Load/Refresh Poem Text"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.83 6.72 2.24"></path>
+                                        <polyline points="21 3 21 9 15 9"></polyline>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
