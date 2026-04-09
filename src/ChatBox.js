@@ -146,7 +146,9 @@ function ChatBox() {
                 setChatHistory(prev => prev.map(msg => msg.id === messageId ? { ...msg, status: 'failed', errorText: 'Stopped by user.' } : msg));
             } else {
                 console.error("Error sending message:", err.response?.data || err.message);
-                setChatHistory(prev => prev.map(msg => msg.id === messageId ? { ...msg, status: 'failed' } : msg));
+                const errorData = err.response?.data;
+                const specificError = errorData?.details || (typeof errorData?.error === 'string' ? errorData.error : null) || "Message failed to send.";
+                setChatHistory(prev => prev.map(msg => msg.id === messageId ? { ...msg, status: 'failed', errorText: specificError } : msg));
             }
         } finally {
             setLoadingAiResponse(false);
