@@ -18,8 +18,9 @@
     height: calc(100vh - 3rem);
     margin: 1.5rem auto;
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-md);
     border: 1px solid var(--border);
+    backdrop-filter: blur(20px);
   }
 }
 
@@ -592,7 +593,7 @@ kbd {
   justify-content: space-between;
   margin-top: 0.75rem;
   padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid var(--border);
   gap: 1rem;
 }
 
